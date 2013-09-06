@@ -8,4 +8,4 @@ Depency: [LineArduino](https://github.com/muzhig/linearduino "linear algebra lib
 
 You must implement functions declared in KalmanParams.h to define your matricies.
 
-In functions *getF* and *getH* you will get additional parameter - vector z (one-column matrix) of current state.
+Functions *getF* and *getH* have an additional parameter - vector *z* (one-column matrix) of current state.
