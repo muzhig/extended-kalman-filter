@@ -4,7 +4,7 @@ Extended Kalman Filter
 C++ implementation of EKF.
 Arduino compatible.
 
-Depency: [LineArduino](https://github.com/muzhig/linearduino "linear algebra library") 
+Depency: [LineArduino](https://github.com/muzhig/linearduino "linear algebra library for arduino") 
 
 You must implement functions declared in KalmanParams.h to define your matricies.
 
