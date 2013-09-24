@@ -5,9 +5,9 @@
  *      Author: muzhig
  */
 
-#include <Kalman.h>
-#include <Matrix.h>
-
+#include "Kalman.h"
+#include "Matrix.h"
+#include "utils.h"
 ExtendedKalman::ExtendedKalman() {
 	int N = getN();
 	X = Matrix(N, 1); // column vector
@@ -28,7 +28,7 @@ void ExtendedKalman::predict() {
 		X.dotSelf(F, true);
 	//	P = F * P * F.T + Q
 
-		P.dotSelf(F, true).dotSelf(F.transpose());
+		P.dotSelf(F, true).dotSelf(F.transposed());
 	}
 	{
 		Matrix Q;
@@ -38,31 +38,35 @@ void ExtendedKalman::predict() {
 }
 
 void ExtendedKalman::correct(const Matrix& Z) {
-	Matrix K(P);
-
-	Matrix H;
+	Matrix K = P;
+	Matrix H(7,7);
 	getH(H, X);
-	K.dotSelf(H, true).dotSelf(H.transpose());
-
 	{
-		Matrix R;
+		K.dotSelf(H, true);
+		H.transpose();
+		K.dotSelf(H);// H=H.T
+	}
+	{
+		Matrix R(7,7);
 		getR(R);
 		K += R;
 	}
 	K.inverse();
-	K.dotSelf(H.transpose(), true).dotSelf(P, true);
+
+	K.dotSelf(H, true).dotSelf(P, true); // H.T
+
 	// K = (P * H.T * (H * P * H.T)^-1)
+
 	{
 		Matrix xz(X);
-		xz.dotSelf(H, true);
+		xz.dotSelf(H.transpose(), true);// H = H.T.T (transpose back)
 		xz -= Z;
 		xz *= -1;
 		xz.dotSelf(K, true);
 		X += xz;
 		// X = X + K * (Z - H * X)
 	}
-
-	K.dotSelf(H);
+	K.dotSelf(H); // H
 	K -= Matrix::identity(getN());
 	K *= -1;
 	P.dotSelf(K, true);
